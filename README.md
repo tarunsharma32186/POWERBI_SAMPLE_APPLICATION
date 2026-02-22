@@ -1,87 +1,144 @@
-# Power BI AppOwnsData Sample Application
+# 📊 Power BI – Embedded Reporting Sample Application
 
 ## Overview
 
-This application demonstrates embedding Power BI reports using the AppOwnsData model. It supports reports based on multiple semantic models and external databases (e.g., PostgreSQL), and addresses common issues encountered with service principal authentication and on-premise data sources.
+This project demonstrates secure embedding of Power BI reports using the **POWERBI_SAMPLE_APPLICATION** model with Azure AD Service Principal authentication.
+
+It supports:
+
+- Multiple semantic models (datasets)
+- External databases (PostgreSQL)
+- On-premise data sources via Power BI Gateway
+- Dynamic configuration (no hardcoded IDs)
+- Production-style error handling & logging
+
+The goal of this application is to showcase real-world embedding scenarios and handle common authentication and gateway challenges.
 
 ---
 
-## Features
-
-- Embed Power BI reports with multiple semantic models
-- Support for external databases (PostgreSQL)
-- Dynamic configuration (no static IDs)
-- Enhanced error handling for on-premise data sources
+## Architecture Flow
+<img width="1536" height="1024" alt="powerbirepo" src="https://github.com/user-attachments/assets/983b4e99-bee5-4db5-b775-9ab6833f353f" />
 
 ---
 
-## Technical Implementation Steps
+## Authentication
 
-### 1. Configuration Setup
-
-- All environment-specific values (clientId, workspaceId, reportId, database credentials) are stored in `config/config.json`.
-- No static IDs are used in the source code.
-
-### 2. Authentication
-
-- Azure AD authentication is implemented using a service principal.
-- Access tokens are acquired for Power BI REST API calls.
-
-### 3. Fetching Report and Dataset Details
-
-- The application retrieves report and dataset information from Power BI using REST API endpoints.
-- Supports multiple semantic models and databases.
-
-### 4. Embed Token Generation
-
-- The application authenticates with Azure AD and obtains an access token.
-- It calls the Power BI REST API `GenerateToken` endpoint, specifying all required reports, datasets, and workspaces in the payload.
-- All relevant dataset IDs and report IDs are included, allowing the embed token to grant access to multiple semantic models.
-- For external databases (e.g., PostgreSQL), dataset connection details are configured in Power BI, and the service principal is granted necessary permissions.
-- The generated embed token is used in the frontend to securely embed the report.
-
-### 5. Handling On-Premise Data Source Errors
-
-- When using multiple semantic models and on-premise data sources with a service principal, Power BI may return an "on-premise error" due to gateway or permission issues.
-- The application detects this error by checking API responses and embed process results.
-- To resolve:
-  - The service principal is mapped in the Power BI gateway and given access to all required data sources.
-  - All necessary dataset IDs are included in the embed token request.
-  - Error messages and logging are implemented to identify problematic data sources or gateways.
-- This enables successful embedding of reports with both cloud and on-premise sources.
-
-### 6. Embedding the Report
-
-- The Power BI JavaScript SDK is used to embed the report in the frontend.
-- The embed token and report configuration are passed to the SDK.
-
-### 7. Error Handling and Logging
-
-- Comprehensive error handling is implemented for authentication, token generation, and report embedding.
-- Clear logging is provided for troubleshooting.
-
-### 8. Dynamic Configuration
-
-- All IDs and credentials are dynamically loaded from configuration files.
-- No static IDs are present in the source code.
+- Uses Azure AD **Service Principal**
+- Access tokens acquired for Power BI REST API
+- No credentials hardcoded in source code
+- Fully environment-driven configuration
 
 ---
 
-## Usage
+## Configuration Management
 
-1. Update `config/config.json` with your environment-specific values.
-2. Run the application.
-3. Access the embedded Power BI report in your browser.
+All environment-specific values are stored in:
+config/config.json
+
+Configuration includes:
+
+- clientId
+- tenantId
+- clientSecret
+- workspaceId
+- reportId
+- datasetIds
+- database connection details
+
+✔ No static IDs in source code  
+✔ Easily configurable across environments  
 
 ---
 
-## Troubleshooting
+## Embed Token Generation (Multi-Dataset Support)
 
-- If you encounter "on-premise error" messages, ensure your service principal is mapped in the Power BI gateway and has access to all required data sources.
-- Check logs for detailed error information.
+The application:
+
+1. Authenticates with Azure AD.
+2. Retrieves report and dataset metadata via Power BI REST API.
+3. Calls the `GenerateToken` endpoint.
+4. Includes:
+   - Multiple dataset IDs
+   - Report IDs
+   - Workspace IDs
+5. Generates an embed token that grants access to multiple semantic models.
+
+This enables embedding reports connected to:
+
+- Cloud data sources
+- PostgreSQL
+- On-premise data sources via Gateway
+
+---
+
+## Handling On-Premise Gateway Errors
+
+When embedding reports using service principals with on-premise data sources, Power BI may return:
+
+> "On-premise data gateway error"
+
+This project resolves that by:
+
+- Mapping the service principal in the Power BI Gateway
+- Granting access to all required data sources
+- Including all necessary dataset IDs in embed token payload
+- Implementing structured error handling & logging
+
+This ensures successful embedding across hybrid environments.
+
+---
+
+## Frontend Embedding
+
+- Uses Power BI JavaScript SDK
+- Securely passes embed token
+- Dynamically loads report configuration
+- Handles embed lifecycle events and errors
+
+---
+
+## Tech Stack
+
+- Node.js
+- Azure AD (Service Principal Authentication)
+- Power BI REST API
+- Power BI JavaScript SDK
+- PostgreSQL
+- JSON-based configuration
+
+---
+
+## How to Run
+
+1. Clone the repository: git clone <your-repo-url>
+2. Install dependencies: npm install
+3. Update `config/config.json` with your environment values.
+4. Start the server: npm start
+5. Open the application in your browser to view the embedded report.
+
+---
+
+## Key Highlights
+
+- Secure AppOwnsData implementation
+- Multi-dataset embed token generation
+- Hybrid (cloud + on-premise) support
+- Gateway troubleshooting handling
+- Production-style configuration management
+- Clean separation of authentication and embedding logic
+
+---
+
+## Learning Outcomes
+
+- Understanding Power BI embedding architecture
+- Service principal authentication flow
+- Handling semantic models and dataset relationships
+- Resolving gateway-based authentication errors
+- Secure backend token generation patterns
 
 ---
 
 ## License
 
-This project is for educational and demonstration purposes.
+This project is intended for educational and demonstration purposes.
